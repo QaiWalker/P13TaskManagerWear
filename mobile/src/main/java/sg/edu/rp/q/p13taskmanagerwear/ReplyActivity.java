@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 public class ReplyActivity extends AppCompatActivity {
 
+    Task data;
 
 
     @Override
@@ -27,7 +28,13 @@ public class ReplyActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
 
         }
-
+        if (reply.equals("Completed")){
+            DBHelper dbh = new DBHelper(ReplyActivity.this);
+            dbh.deleteTask(data.getId());
+            dbh.close();
+            setResult(RESULT_OK);
+            finish();
+        }
 
     }
 }

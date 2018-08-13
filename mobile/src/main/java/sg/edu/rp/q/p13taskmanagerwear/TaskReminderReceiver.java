@@ -39,24 +39,16 @@ public class TaskReminderReceiver extends BroadcastReceiver {
 		PendingIntent pIntent = PendingIntent.getActivity(context, notifReqCode,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-
-        // build notification
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
-		builder.setContentTitle("Task Manager Reminder");
-		builder.setContentText(name);
-		builder.setSmallIcon(android.R.drawable.ic_dialog_info);
-		builder.setContentIntent(pIntent);
-		builder.setAutoCancel(true);
-
-		Notification n = builder.build();
+        RemoteInput ri = new RemoteInput.Builder("status")
+                .setLabel("Status report")
+                .setChoices(new String [] {"Completed", "Not yet"})
+                .build();
 
         NotificationCompat.Action action = new
                 NotificationCompat.Action.Builder(
                 R.mipmap.ic_launcher,
-                "Reply",
-                pIntent).build();
-
+                "Launch Task Manager",
+                pIntent).addRemoteInput(ri).build();
 
         Intent intentreply = new Intent(context,
                 ReplyActivity.class);
@@ -64,15 +56,33 @@ public class TaskReminderReceiver extends BroadcastReceiver {
                 (context, 0, intentreply,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        RemoteInput ri = new RemoteInput.Builder("status")
+
+        RemoteInput riReply = new RemoteInput.Builder("status")
                 .setLabel("Status report")
                 .setChoices(new String [] {"Speak now", "Draw Emoji"})
                 .build();
+
+        NotificationCompat.Action action2 = new
+                NotificationCompat.Action.Builder(
+                R.mipmap.ic_launcher,
+                "Reply",
+                pendingIntentReply).addRemoteInput(riReply).build();
 
 
         NotificationCompat.WearableExtender extender = new
                 NotificationCompat.WearableExtender();
         extender.addAction(action);
+        extender.addAction(action2);
+
+        // build notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
+        builder.setContentTitle("Task Manager Reminder");
+        builder.setContentText(name);
+        builder.setSmallIcon(android.R.drawable.ic_dialog_info);
+        builder.setContentIntent(pIntent);
+        builder.setAutoCancel(true);
+
+        Notification n = builder.build();
 
 
         notificationManager.notify(notifReqCode, n);
